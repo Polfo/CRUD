@@ -20,6 +20,9 @@ trait HasEnumFields
 
         $instance = new static(); // create an instance of the model to be able to get the table name
         $connectionName = $instance->getConnectionName();
+        if (env('DB_CONNECTION') == 'sqlite') {
+            throw new Exception("Backpack type 'enum' not supported by sqlite databases");
+        }
         $type = DB::connection($connectionName)->select(DB::raw('SHOW COLUMNS FROM `'.$table_prefix.$instance->getTable().'` WHERE Field = "'.$field_name.'"'))[0]->Type;
         preg_match('/^enum\((.*)\)$/', $type, $matches);
         $enum = [];
